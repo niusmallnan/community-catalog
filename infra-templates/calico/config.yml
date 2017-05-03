@@ -1,0 +1,10 @@
+name: Calico
+description: |
+  A Pure Layer 3 Approach to Virtual Networking for Highly Scalable Data Centers
+version: v1.0.2        # Keep this in sync with calico/node tag version
+category: Networking
+projectURL: https://www.projectcalico.org/
+license: Apache License, Version 2.0
+labels:
+  io.rancher.certified: Experimental
+  io.rancher.orchestration.supported: 'cattle'

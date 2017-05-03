@@ -1,0 +1,54 @@
+version: '2'
+services:
+  calico:
+    image: calico/node:v1.0.2
+    privileged: true
+    network_mode: host
+    depends_on:
+      - calico-etcd
+    labels:
+      io.rancher.sidekicks: cni-driver
+      io.rancher.scheduler.global: 'true'
+      io.rancher.container.dns: 'true'
+    volumes:
+      - /var/run/calico:/var/run/calico:rw
+      - /var/log/calico:/var/log/calico:rw
+    environment:
+      ETCD_ENDPOINTS: 'http://calico-etcd.calico.rancher.internal:2379'
+      IP_AUTODETECT_METHOD: 'can-reach=${AUTODETECT_CAN_REACH}'
+  cni-driver:
+    privileged: true
+    image: calico/cni:v1.5.6
+    command: sh
+    tty: true
+    network_mode: host
+    pid: host
+    labels:
+      io.rancher.network.cni.binary: 'calico'
+      io.rancher.container.dns: 'true'
+  calicoctl:
+    image: niusmallnan/calico-ctl:v1.0.2
+    network_mode: host
+    pid: host
+    entrypoint:
+      - /usr/bin/entry.sh
+    environment:
+      ETCD_ENDPOINTS: 'http://calico-etcd.calico.rancher.internal:2379'
+      SUBNET: ${SUBNET}
+    stdin_open: true
+    tty: true
+    volumes:
+      - /var/run/calico:/var/run/calico:ro
+    labels:
+      io.rancher.container.dns: 'true'
+  calico-etcd:
+    image: niusmallnan/coreos-etcd:v3.0.14
+    network_mode: host
+    labels:
+      io.rancher.container.dns: 'true'
+    command:
+      - etcd
+      - -advertise-client-urls
+      - http://calico-etcd.calico.rancher.internal:2379
+      - -listen-client-urls
+      - http://0.0.0.0:2379,http://0.0.0.0:4001
