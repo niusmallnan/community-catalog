@@ -1,0 +1,7 @@
+name: Rancher Flat
+version: v0.1.0
+category: Networking
+minimum_rancher_version: v1.6.0-alpha1
+labels:
+  io.rancher.certified: Experimental
+  io.rancher.orchestration.supported: 'cattle'
